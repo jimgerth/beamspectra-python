@@ -1,6 +1,8 @@
 # Beamspectra
 An interactive beamspectrum visualizer for a simple delay and sum beamformer.
 
+![](./demo.gif)
+
 ## Run
 ```bash
 # Clone this git repository onto your local device.
