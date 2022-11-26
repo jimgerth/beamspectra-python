@@ -58,12 +58,12 @@ class sliderdemo(QWidget):
         layout.addLayout(m_layout)
 
         d_layout = QHBoxLayout()
-        d_initial = 0.04
-        self.d_min = 0.01
-        self.d_max = 1
-        self.d_step = 0.01
+        d_initial = 0.03
+        self.d_min = 0.005
+        self.d_max = 0.4
+        self.d_step = 0.005
         d_res = round((self.d_max - self.d_min) / self.d_step)
-        self.d_label = QLabel(f'd = {d_initial}')
+        self.d_label = QLabel(f'd = {d_initial * 1000:.0f}mm')
         d_layout.addWidget(self.d_label)
         self.d_slider = QSlider(Qt.Horizontal)
         self.d_slider.setMinimum(0)
@@ -126,7 +126,7 @@ class sliderdemo(QWidget):
         self.update()
 
     def d_slider_update(self):
-        self.d_label.setText(f'd = {self.d():.2f}')
+        self.d_label.setText(f'd = {self.d() * 1000:.0f}mm')
         self.update()
 
     def m_slider_update_HD(self):
@@ -134,7 +134,7 @@ class sliderdemo(QWidget):
         self.update(res=1)
 
     def d_slider_update_HD(self):
-        self.d_label.setText(f'd = {self.d():.2f}')
+        self.d_label.setText(f'd = {self.d() * 1000:.0f}mm')
         self.update(res=1)
 		
 def main():
