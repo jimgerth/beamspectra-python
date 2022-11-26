@@ -118,7 +118,10 @@ class sliderdemo(QWidget):
         #self.pool.start(ThreadingService(
         self._ax.clear()
         self._ax.axis('off')
-        self._ax.imshow(self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis[::res], self.a_axis[::res]))
+        self._ax.imshow(
+            self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis[::res], self.a_axis[::res]),
+            cmap='plasma'
+        )
         self._ax.figure.canvas.draw()
 
     def m_slider_update(self):
@@ -131,10 +134,12 @@ class sliderdemo(QWidget):
 
     def m_slider_update_HD(self):
         self.m_label.setText(f'M = {self.m_slider.value()}')
+        # TODO: Only this should be in a separate thread.
         self.update(res=1)
 
     def d_slider_update_HD(self):
         self.d_label.setText(f'd = {self.d() * 1000:.0f}mm')
+        # TODO: Only this should be in a separate thread.
         self.update(res=1)
 		
 def main():
