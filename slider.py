@@ -30,12 +30,12 @@ class sliderdemo(QWidget):
 
         a_min = -np.pi / 2
         a_max = np.pi / 2
-        a_res = 128
+        a_res = 256
         self.a_axis = np.linspace(a_min, a_max, a_res)
 
         f_min = 0
         f_max = 10_000
-        f_res = 128
+        f_res = 256
         self.f_axis = np.linspace(f_min, f_max, f_res)
 
         layout = QVBoxLayout()
@@ -53,6 +53,7 @@ class sliderdemo(QWidget):
         self.m_slider.setMaximum(30)
         self.m_slider.setValue(M_initial)
         self.m_slider.valueChanged.connect(self.m_slider_update)
+        self.m_slider.sliderReleased.connect(self.m_slider_update_HD)
         m_layout.addWidget(self.m_slider)
         layout.addLayout(m_layout)
 
@@ -61,7 +62,7 @@ class sliderdemo(QWidget):
         self.d_min = 0.01
         self.d_max = 1
         self.d_step = 0.01
-        d_res = (self.d_max - self.d_min) / self.d_step
+        d_res = round((self.d_max - self.d_min) / self.d_step)
         self.d_label = QLabel(f'd = {d_initial}')
         d_layout.addWidget(self.d_label)
         self.d_slider = QSlider(Qt.Horizontal)
@@ -69,6 +70,7 @@ class sliderdemo(QWidget):
         self.d_slider.setMaximum(d_res)
         self.d_slider.setValue(self.d_to_i(d_initial))
         self.d_slider.valueChanged.connect(self.d_slider_update)
+        self.d_slider.sliderReleased.connect(self.d_slider_update_HD)
         d_layout.addWidget(self.d_slider)
 
         layout.addLayout(d_layout)
@@ -76,7 +78,7 @@ class sliderdemo(QWidget):
         self.setLayout(layout)
         self.setWindowTitle('Beampatterns')
 
-        self.update()
+        self.update(res=1)
 
     def beam_pattern(self, M, d, v, f, a_axis):
         pattern = []
@@ -111,12 +113,12 @@ class sliderdemo(QWidget):
         di = self.d_slider.value()
         return self.d_min + di * self.d_step
 
-    def update(self):
+    def update(self, res=4):
         # TODO: potentially add some threading...
         #self.pool.start(ThreadingService(
         self._ax.clear()
         self._ax.axis('off')
-        self._ax.imshow(self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis, self.a_axis))
+        self._ax.imshow(self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis[::res], self.a_axis[::res]))
         self._ax.figure.canvas.draw()
 
     def m_slider_update(self):
@@ -126,6 +128,14 @@ class sliderdemo(QWidget):
     def d_slider_update(self):
         self.d_label.setText(f'd = {self.d():.2f}')
         self.update()
+
+    def m_slider_update_HD(self):
+        self.m_label.setText(f'M = {self.m_slider.value()}')
+        self.update(res=1)
+
+    def d_slider_update_HD(self):
+        self.d_label.setText(f'd = {self.d():.2f}')
+        self.update(res=1)
 		
 def main():
     app = QApplication(sys.argv)
