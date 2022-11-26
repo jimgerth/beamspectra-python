@@ -97,7 +97,7 @@ class sliderdemo(QWidget):
             pattern.append(logOutput)
         return pattern
 
-    def beam_pattern_plot(self, M, d, v, f_axis, a_axis):
+    def beam_spectrum(self, M, d, v, f_axis, a_axis):
         pattern = []
         for f in np.flip(f_axis):
             pattern.append(self.beam_pattern(M, d, v, f, a_axis))
@@ -119,7 +119,7 @@ class sliderdemo(QWidget):
         self._ax.clear()
         self._ax.axis('off')
         self._ax.imshow(
-            self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis[::res], self.a_axis[::res]),
+            self.beam_spectrum(self.M(), self.d(), 343, self.f_axis[::res], self.a_axis[::res]),
             cmap='plasma'
         )
         self._ax.figure.canvas.draw()
