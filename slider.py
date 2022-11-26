@@ -1,4 +1,6 @@
 import sys
+from time import time
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -22,10 +24,17 @@ class ThreadingService(QRunnable):
     def run(self):
         self.fn(*self.args, **self.kwargs)
 
+# Timestamped image
+class Image:
+    def __init__(self, image, time):
+        self.image = image
+        self.time = time
+
 class sliderdemo(QWidget):
     def __init__(self, parent = None):
         super(sliderdemo, self).__init__(parent)
 
+        self.image = None
         self.pool = QThreadPool()
 
         a_min = -np.pi / 2
@@ -111,13 +120,25 @@ class sliderdemo(QWidget):
         di = self.d_slider.value()
         return self.d_min + di * self.d_step
 
+    def update_image(self):
+        t = time()
+        if self.image is None or self.image.time < t:
+            image = self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis, self.a_axis)
+            if self.image is None or self.image.time < t:
+                self.image = Image(image, t)
+
     def update(self):
-        # TODO: potentially add some threading...
-        #self.pool.start(ThreadingService(
-        self._ax.clear()
-        self._ax.axis('off')
-        self._ax.imshow(self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis, self.a_axis))
-        self._ax.figure.canvas.draw()
+        t = time()
+        #self.pool.start(ThreadingService(self.update_image))
+        self.image = Image(
+            self.beam_pattern_plot(self.M(), self.d(), 343, self.f_axis[::4], self.a_axis[::4]),
+            t
+        )
+        if self.image is not None:
+            self._ax.clear()
+            self._ax.axis('off')
+            self._ax.imshow(self.image.image)
+            self._ax.figure.canvas.draw()
 
     def m_slider_update(self):
         self.m_label.setText(f'M = {self.m_slider.value()}')
